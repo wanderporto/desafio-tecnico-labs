@@ -1,0 +1,14 @@
+version: "3"
+services:
+  tad:
+    image: postgres:latest
+    container_name: "postgres_luizalabs"
+    environment:
+      - POSTGRES_DB=schedule
+      - POSTGRES_USER=luizalabs
+      - POSTGRES_PASSWORD=luizalabs
+      - TZ=GMT
+    volumes:
+      - "./data/postgres:/var/lib/postgresql/data"
+    ports:
+      - 5432:5432

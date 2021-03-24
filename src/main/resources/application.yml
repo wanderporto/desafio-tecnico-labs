@@ -1,0 +1,18 @@
+spring:
+  datasource:
+    password: luizalabs
+    url: jdbc:postgresql://localhost:5432/schedule
+    username: luizalabs
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    show-sql: true
+    
+  security:
+    user:
+      name: admin
+      password: admin
