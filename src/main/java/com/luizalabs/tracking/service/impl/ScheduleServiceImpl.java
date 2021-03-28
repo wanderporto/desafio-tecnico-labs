@@ -1,17 +1,20 @@
-package com.luizalabs.tracking.service;
+package com.luizalabs.tracking.service.impl;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.luizalabs.tracking.dto.RequestScheduleDto;
 import com.luizalabs.tracking.entity.Schedule;
 import com.luizalabs.tracking.repository.ScheduleRepository;
+import com.luizalabs.tracking.service.ScheduleService;
 
 @Service
 public class ScheduleServiceImpl implements ScheduleService {
 
-	private ScheduleRepository scheduleRepository;
+	private final ScheduleRepository scheduleRepository;
 	
 	@Autowired
 	public ScheduleServiceImpl(ScheduleRepository scheduleRepository) {
@@ -19,8 +22,8 @@ public class ScheduleServiceImpl implements ScheduleService {
 	}
 	
 	@Override
-	public Schedule create(Schedule schedule) {
-		return scheduleRepository.save(schedule);
+	public Schedule create(RequestScheduleDto scheduleDto) {
+		return scheduleRepository.save(new Schedule(scheduleDto));
 	}
 
 	@Override
@@ -29,8 +32,14 @@ public class ScheduleServiceImpl implements ScheduleService {
 	}
 
 	@Override
-	public Optional<Schedule> findById(Long id) {
+	public Optional<Schedule> getSchedule(Long id) {
 		return scheduleRepository.findById(id);
 	}
+
+	@Override
+	public List<Schedule> getSchedules() {
+		return scheduleRepository.findAll();
+	}
+
 
 }
