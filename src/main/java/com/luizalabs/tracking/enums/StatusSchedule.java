@@ -2,7 +2,7 @@ package com.luizalabs.tracking.enums;
 
 public enum StatusSchedule {
 
-	SUBMIT(0,"submit"),
+	PENDING(0,"pending"),
 	SENT(1,"sent");
 	
 	private int id;

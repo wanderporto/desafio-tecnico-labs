@@ -12,7 +12,7 @@ public class ResponseScheduleDto {
 	private String recipient;
 	private String status;
 	
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern =  "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "America/Sao_Paulo")
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern =  "yyyy-MM-dd'T'HH:mm:ss", timezone = "America/Sao_Paulo")
 	private LocalDateTime sendAt;
 	
 	public ResponseScheduleDto() {
@@ -24,7 +24,9 @@ public class ResponseScheduleDto {
 		this.message = schedule.getMessage();
 		this.recipient = schedule.getRecipient();
 		this.sendAt = schedule.getSendAt();
-		this.status = schedule.getStatus().getDescription();
+		if (schedule.getStatus()!= null) {
+			this.status = schedule.getStatus().getDescription(); 
+		}
 	}
 
 	public Long getId() {
