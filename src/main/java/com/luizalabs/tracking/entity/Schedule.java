@@ -10,6 +10,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
+import javax.persistence.SequenceGenerator;
 
 import com.luizalabs.tracking.dto.RequestScheduleDto;
 import com.luizalabs.tracking.enums.StatusSchedule;
@@ -18,7 +19,8 @@ import com.luizalabs.tracking.enums.StatusSchedule;
 public class Schedule {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+    @SequenceGenerator(name = "schedule_seq", sequenceName = "schedule_seq", allocationSize = 1)
+    @GeneratedValue(generator = "schedule_seq", strategy = GenerationType.AUTO)
 	private Long id;
 	private String message;
 	private String recipient;
@@ -100,7 +102,7 @@ public class Schedule {
 	@PrePersist
 	protected void prePersist() {
 	  createdAt = LocalDateTime.now();
-	  status = StatusSchedule.SUBMIT;
+	  status = StatusSchedule.PENDING;
 	}
   
 	@PreUpdate
