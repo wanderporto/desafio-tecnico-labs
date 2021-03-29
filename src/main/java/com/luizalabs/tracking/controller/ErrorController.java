@@ -11,6 +11,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import springfox.documentation.annotations.ApiIgnore;
+
+@ApiIgnore
 @Controller
 @RequestMapping("${server.error.path:${error.path:/error}}")
 public class ErrorController extends AbstractErrorController{
