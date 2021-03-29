@@ -1,7 +1,6 @@
 package com.luizalabs.tracking.controller;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -16,10 +15,13 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import com.luizalabs.tracking.dto.RequestScheduleDto;
 import com.luizalabs.tracking.entity.Schedule;
+import com.luizalabs.tracking.enums.StatusSchedule;
 import com.luizalabs.tracking.execption.ScheduleNotFound;
 import com.luizalabs.tracking.repository.ScheduleRepository;
 import com.luizalabs.tracking.service.impl.ScheduleServiceImpl;
@@ -29,7 +31,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
-
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -74,16 +75,14 @@ public class ScheduleControllerTest {
 	}
 
 	@Test
-	@Order(1)
 	public void should_create_schedule() throws Exception {
-		
 		when(mockScheduleService.create(Mockito.any(RequestScheduleDto.class))).thenReturn(this.schedule);
 	    
 		this.mockMvc
-        .perform(post("/v1/schedule/")
-		.content(this.requestSchedule)
-        .contentType(MediaType.APPLICATION_JSON_VALUE))
-        .andExpect(status().isCreated());
+        	.perform(post("/v1/schedule/")
+			.content(this.requestSchedule)
+        	.contentType(MediaType.APPLICATION_JSON_VALUE))
+        	.andExpect(status().isCreated());
 	}
 
 	@Test
@@ -93,15 +92,14 @@ public class ScheduleControllerTest {
 	    
 		this.requestSchedule = "{\"message\": \"testando\",\"sendAt\":\"2020-11-23T23:59:59\"}";
 		this.mockMvc
-        .perform(post("/v1/schedule/")
-		.content(this.requestSchedule)
-        .contentType(MediaType.APPLICATION_JSON_VALUE))
-        .andExpect(status().isBadRequest());
+        	.perform(post("/v1/schedule/")
+			.content(this.requestSchedule)
+        	.contentType(MediaType.APPLICATION_JSON_VALUE))
+        	.andExpect(status().isBadRequest());
 	}
 
 	@Test
-	public void case_message_isEmpty_then_should_statusCode_400() throws Exception {
-		
+	public void case_message_isEmpty_then_should_statusCode_400() throws Exception {	
 		when(mockScheduleService.create(Mockito.any(RequestScheduleDto.class))).thenReturn(this.schedule);
 	    
 		this.requestSchedule = "{\"recipient\":\"wander\",\"sendAt\":\"2020-11-23T23:59:59\"}";
@@ -109,69 +107,96 @@ public class ScheduleControllerTest {
         .perform(post("/v1/schedule/")
 		.content(this.requestSchedule)
         .contentType(MediaType.APPLICATION_JSON_VALUE))
-        .andExpect(status().isBadRequest());
-		
+        .andExpect(status().isBadRequest());	
 	}
 
 	@Test
 	public void case_sendAt_isEmpty_then_should_statusCode_400() throws Exception {
 	    this.requestSchedule = "{\"recipient\":\"wander\",\"message\": \"testando\"}";
 		this.mockMvc
-        .perform(post("/v1/schedule/")
-		.content(this.requestSchedule)
-        .contentType(MediaType.APPLICATION_JSON_VALUE))
-        .andExpect(status().isBadRequest());
+        	.perform(post("/v1/schedule/")
+			.content(this.requestSchedule)
+        	.contentType(MediaType.APPLICATION_JSON_VALUE))
+        	.andExpect(status().isBadRequest());
 	}
 
 	@Test
 	public void should_deleted_schedule() throws Exception {
 
-		when(mockScheduleService.getSchedule(1L)).thenReturn(Optional.of(this.schedule));
+		when(mockScheduleService.getScheduleById(1L)).thenReturn(Optional.of(this.schedule));
 		
 		this.mockMvc
-        .perform(delete("/v1/schedule/1")
-		.content(this.requestSchedule)
-        .contentType(MediaType.APPLICATION_JSON_VALUE))
-        .andExpect(status().isNoContent());		
+        	.perform(delete("/v1/schedule/1")
+			.content(this.requestSchedule)
+        	.contentType(MediaType.APPLICATION_JSON_VALUE))
+        	.andExpect(status().isNoContent());		
 	}
 	
 	@Test
 	public void case_delete_schedule_not_found_then_statuscode_404() throws Exception {
 
 		Optional<Schedule> empty = Optional.empty();
-		when(mockScheduleService.getSchedule(1L)).thenReturn(empty);
+		when(mockScheduleService.getScheduleById(1L)).thenReturn(empty);
 
 		this.mockMvc
-        .perform(delete("/v1/schedule/1")
-        .contentType(MediaType.APPLICATION_JSON_VALUE))
-		.andExpect(status().isNotFound())
-		.andExpect(result -> assertTrue(result.getResolvedException() instanceof ScheduleNotFound));
+        	.perform(delete("/v1/schedule/1")
+        	.contentType(MediaType.APPLICATION_JSON_VALUE))
+			.andExpect(status().isNotFound())
+			.andExpect(result -> assertTrue(result.getResolvedException() instanceof ScheduleNotFound));
 	}
 
 	@Test
 	public void should_return_schedule() throws Exception {
 
-		when(mockScheduleService.getSchedule(1L)).thenReturn(Optional.of(this.schedule));
+		when(mockScheduleService.getScheduleById(1L)).thenReturn(Optional.of(this.schedule));
 		
 		this.mockMvc
-        .perform(get("/v1/schedule/1")
-		.content(this.requestSchedule)
-        .contentType(MediaType.APPLICATION_JSON_VALUE))
-        .andExpect(status().isOk());		
+        	.perform(get("/v1/schedule/1")
+			.content(this.requestSchedule)
+        	.contentType(MediaType.APPLICATION_JSON_VALUE))
+        	.andExpect(status().isOk());		
 	}
 
 	@Test
-	public void case_find_scheduleBy_not_found_then_status_404() throws Exception {
+	public void case_find_scheduleById_not_found_then_status_404() throws Exception {
 
 		Optional<Schedule> empty = Optional.empty();
-
-		when(mockScheduleService.getSchedule(1L)).thenReturn(empty);
+		when(mockScheduleService.getScheduleById(1L)).thenReturn(empty);
 		
 		this.mockMvc
-        .perform(get("/v1/schedule/1")
-		.content(this.requestSchedule)
-        .contentType(MediaType.APPLICATION_JSON_VALUE))
-        .andExpect(status().isNotFound());		
+        	.perform(get("/v1/schedule/1")
+			.content(this.requestSchedule)
+        	.contentType(MediaType.APPLICATION_JSON_VALUE))
+        	.andExpect(status().isNotFound());		
+	}
+
+	@Test
+	public void should_scheduleByStatus_then_ok() throws Exception {
+
+		List<Schedule> list = new ArrayList<>();
+		list.add(this.schedule);
+		
+		when(mockScheduleService.getSchedulesByStatus(StatusSchedule.PENDING)).thenReturn(list);
+		
+		this.mockMvc
+        	.perform(get("/v1/schedule?status=PENDING")
+			.content(this.requestSchedule)
+        	.contentType(MediaType.APPLICATION_JSON_VALUE))
+        	.andExpect(status().isOk());		
+	}
+
+	@Test
+	public void case_scheduleByStatus_not_found_then_404() throws Exception {
+
+		List<Schedule> list = new ArrayList<>();
+		
+		when(mockScheduleService.getSchedulesByStatus(StatusSchedule.PENDING)).thenReturn(list);
+		
+		this.mockMvc
+        	.perform(get("/v1/schedule?status=PENDING")
+			.content(this.requestSchedule)
+        	.contentType(MediaType.APPLICATION_JSON_VALUE))
+        	.andExpect(status().isNotFound());		
 	}
 
 }

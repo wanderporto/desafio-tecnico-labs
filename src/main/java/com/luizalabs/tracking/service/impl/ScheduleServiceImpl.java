@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.luizalabs.tracking.dto.RequestScheduleDto;
 import com.luizalabs.tracking.entity.Schedule;
+import com.luizalabs.tracking.enums.StatusSchedule;
 import com.luizalabs.tracking.repository.ScheduleRepository;
 import com.luizalabs.tracking.service.ScheduleService;
 
@@ -32,7 +33,7 @@ public class ScheduleServiceImpl implements ScheduleService {
 	}
 
 	@Override
-	public Optional<Schedule> getSchedule(Long id) {
+	public Optional<Schedule> getScheduleById(Long id) {
 		return scheduleRepository.findById(id);
 	}
 
@@ -41,5 +42,8 @@ public class ScheduleServiceImpl implements ScheduleService {
 		return scheduleRepository.findAll();
 	}
 
-
+	@Override
+	public List<Schedule> getSchedulesByStatus(StatusSchedule status) {
+		return scheduleRepository.findByStatus(status);
+	}
 }

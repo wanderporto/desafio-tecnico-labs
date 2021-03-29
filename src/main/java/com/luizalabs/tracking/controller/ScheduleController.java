@@ -14,11 +14,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.luizalabs.tracking.dto.RequestScheduleDto;
 import com.luizalabs.tracking.dto.ResponseScheduleDto;
 import com.luizalabs.tracking.entity.Schedule;
+import com.luizalabs.tracking.enums.StringToEnumConverter;
 import com.luizalabs.tracking.execption.ScheduleNotFound;
 import com.luizalabs.tracking.service.ScheduleService;
 import com.luizalabs.tracking.service.impl.ScheduleServiceImpl;
@@ -50,7 +52,7 @@ public class ScheduleController {
 
 	@DeleteMapping(path = "/{id}")
 	public ResponseEntity<?> deleteSchedule(@PathVariable("id") Long id) {
-		Optional<Schedule> schedule = scheduleService.getSchedule(id);
+		Optional<Schedule> schedule = scheduleService.getScheduleById(id);
 
 		if (!schedule.isPresent()) {
 			throw new ScheduleNotFound(MSG_NOT_FOUND);
@@ -62,7 +64,7 @@ public class ScheduleController {
 	@GetMapping(path = "/{id}")
 	public ResponseEntity<ResponseScheduleDto> getSchedule(@PathVariable("id") Long id) {
 
-		Optional<Schedule> schedule = scheduleService.getSchedule(id);
+		Optional<Schedule> schedule = scheduleService.getScheduleById(id);
 
 		if(!schedule.isPresent()){
 			throw new ScheduleNotFound(MSG_NOT_FOUND);
@@ -76,6 +78,20 @@ public class ScheduleController {
 	public ResponseEntity<List<ResponseScheduleDto>> getSchedules() {
 
 		List<Schedule> schedules = scheduleService.getSchedules();
+		if (schedules.size() == 0) {
+			throw new ScheduleNotFound(MSG_NOT_FOUND);
+		}
+
+		List<ResponseScheduleDto> responseSchedules = schedules.stream().map(x -> new ResponseScheduleDto(x))
+				.collect(Collectors.toList());
+
+		return new ResponseEntity<List<ResponseScheduleDto>>(responseSchedules, HttpStatus.OK);
+	}
+
+	@GetMapping(params = {"status"})
+	public ResponseEntity<List<ResponseScheduleDto>> getSchedulesByStatus(@RequestParam String status) {
+
+		List<Schedule> schedules = scheduleService.getSchedulesByStatus(new StringToEnumConverter().convert(status));
 		if (schedules.size() == 0) {
 			throw new ScheduleNotFound(MSG_NOT_FOUND);
 		}

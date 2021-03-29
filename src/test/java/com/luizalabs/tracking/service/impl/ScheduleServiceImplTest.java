@@ -1,12 +1,11 @@
 package com.luizalabs.tracking.service.impl;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import com.luizalabs.tracking.dto.RequestScheduleDto;
 import com.luizalabs.tracking.entity.Schedule;
@@ -28,40 +27,44 @@ public class ScheduleServiceImplTest {
     private ScheduleRepository mockScheduleRepository;
     
     private Schedule schedule;
+    private RequestScheduleDto scheduleDto;
 
     @BeforeEach
     public void init() {
         MockitoAnnotations.initMocks(this);
-        schedule = new Schedule();
+        
+        this.schedule = new Schedule();
 		schedule.setSendAt(LocalDateTime.now());
 		schedule.setMessage("send mensagge test");
 		schedule.setRecipient("wander wang");
+
+
+        this.scheduleDto = new RequestScheduleDto();
+		scheduleDto.setSendAt(LocalDateTime.now());
+		scheduleDto.setMessage("send mensagge test");
+		scheduleDto.setRecipient("wander wang");
 
         this.mockScheduleRepository = Mockito.spy(ScheduleRepository.class);
         this.mockScheduleService = new ScheduleServiceImpl(this.mockScheduleRepository);
     }
 
-
     @Test
     public void should_create_schedule(){
-        RequestScheduleDto scheduleDto = new RequestScheduleDto();
-		scheduleDto.setSendAt(LocalDateTime.now());
-		scheduleDto.setMessage("send mensagge test");
-		scheduleDto.setRecipient("wander wang");
-
         Mockito.when(mockScheduleRepository.save(this.schedule)).thenReturn(this.schedule);
-
         this.mockScheduleService.create(scheduleDto);
-
 		verify(mockScheduleRepository, times(1)).save(any(Schedule.class));
     }
-
 
     @Test
     public void should_deleted_schedule(){
-        doNothing().when(mockScheduleRepository).deleteById(1l);
-
-		verify(mockScheduleRepository, times(1)).save(any(Schedule.class));
+        this.mockScheduleService.delete(1L);
+		verify(mockScheduleRepository, times(1)).deleteById(1L);
     }
-    
+
+    @Test
+    public void should_return_schedule_by_id(){
+        Mockito.when(mockScheduleRepository.findById(1L)).thenReturn(Optional.of(this.schedule));
+        this.mockScheduleService.getScheduleById(1L);
+		verify(mockScheduleRepository, times(1)).findById(1L);
+    }  
 }
