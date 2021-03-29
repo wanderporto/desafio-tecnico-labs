@@ -13,6 +13,7 @@ import javax.persistence.MapsId;
 import javax.persistence.OneToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
+import javax.persistence.SequenceGenerator;
 
 import com.luizalabs.tracking.enums.TypeComunnicationEnum;
 
@@ -21,7 +22,8 @@ import com.luizalabs.tracking.enums.TypeComunnicationEnum;
 public class Send {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+    @SequenceGenerator(name = "send_seq", sequenceName = "send_seq", allocationSize = 1)
+    @GeneratedValue(generator = "send_seq", strategy = GenerationType.AUTO)
 	private Long id;
 	
 	@Enumerated(value = EnumType.STRING)
