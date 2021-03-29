@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import com.luizalabs.tracking.execption.ScheduleNotFound;
 
+import org.springframework.core.convert.ConversionFailedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -35,7 +36,12 @@ public class ErrorHandler{
 		return error(ex.getMessage(), HttpStatus.NOT_FOUND);
 	}
 
-    public ResponseEntity internalServerError(String data) {
+    @ExceptionHandler(ConversionFailedException.class)
+    public ResponseEntity<String> handleConflict(RuntimeException ex) {
+        return error(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    public ResponseEntity<Object> internalServerError(String data) {
         return error(data, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
@@ -47,6 +53,7 @@ public class ErrorHandler{
 
         return new ResponseEntity(model, httpStatus);
     }
+    
 
     public ResponseEntity error(List<String> data, HttpStatus httpStatus) {
         Map<Object, Object> model = new LinkedHashMap<>();

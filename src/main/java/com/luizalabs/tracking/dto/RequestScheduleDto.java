@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 import javax.validation.constraints.NotNull;
-
 public class RequestScheduleDto implements Serializable {
 	private static final long serialVersionUID = 1L;
 
